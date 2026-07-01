@@ -1,0 +1,14 @@
+Jun 30 22:56:01 kali sshd[1234]: Failed password for root from 192.168.1.99 port 22 ssh2
+Jun 30 22:56:02 kali sshd[1234]: Failed password for root from 192.168.1.99 port 22 ssh2
+Jun 30 22:56:03 kali sshd[1234]: Failed password for root from 192.168.1.99 port 22 ssh2
+Jun 30 22:56:04 kali sshd[1234]: Failed password for root from 192.168.1.99 port 22 ssh2
+Jun 30 22:56:05 kali sshd[1234]: Failed password for root from 192.168.1.99 port 22 ssh2
+Jun 30 22:56:06 kali sshd[1234]: Failed password for root from 192.168.1.99 port 22 ssh2
+Jun 30 22:56:10 kali sshd[1235]: Accepted password for kali from 192.168.1.5 port 54321 ssh2
+Jun 30 22:56:30 kali sudo: kali : TTY=pts/0 ; PWD=/home/kali ; USER=root ; COMMAND=/bin/bash
+Jun 30 22:56:40 kali sudo: kali : TTY=pts/0 ; PWD=/home/kali ; USER=root ; COMMAND=/usr/bin/nmap
+Jun 30 22:56:50 kali sudo: kali : TTY=pts/0 ; PWD=/home/kali ; USER=root ; COMMAND=/bin/cat /etc/shadow
+Jun 30 22:57:00 kali useradd[999]: new user: name=suspicious_user, UID=1001, GID=1001
+Jun 30 22:57:05 kali sshd[1236]: Failed password for invalid user admin from 10.0.0.55 port 12345 ssh2
+Jun 30 22:57:06 kali sshd[1236]: Failed password for invalid user admin from 10.0.0.55 port 12345 ssh2
+Jun 30 22:57:07 kali sshd[1236]: Failed password for invalid user admin from 10.0.0.55 port 12345 ssh2

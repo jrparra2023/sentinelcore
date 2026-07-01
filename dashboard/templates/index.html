@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SentinelCore</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:        #0a0e0a;
+    --bg2:       #0f1410;
+    --bg3:       #141a14;
+    --border:    #1e2a1e;
+    --green:     #39ff14;
+    --green-dim: #1a7a08;
+    --green-glow:#39ff1422;
+    --amber:     #ffb300;
+    --red:       #ff3b3b;
+    --red-dim:   #5c1010;
+    --blue:      #4fc3f7;
+    --text:      #c8d8c8;
+    --text-dim:  #5a6e5a;
+    --mono:      'IBM Plex Mono', monospace;
+    --sans:      'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--green);
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo::before {
+    content: '▶';
+    font-size: 10px;
+    animation: blink 1.4s step-end infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  #last-refresh { color: var(--green-dim); }
+
+  .refresh-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 4px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .refresh-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* ── Layout ── */
+  main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── Stats row ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--green);
+  }
+
+  .stat-card.danger::after  { background: var(--red); }
+  .stat-card.warning::after { background: var(--amber); }
+  .stat-card.info::after    { background: var(--blue); }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .stat-card.danger  .stat-value { color: var(--red); }
+  .stat-card.warning .stat-value { color: var(--amber); }
+  .stat-card.info    .stat-value { color: var(--blue); }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-family: var(--mono);
+  }
+
+  /* ── Two-column ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* ── Panels ── */
+  .panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .panel-header span { color: var(--green); }
+
+  .panel-body { overflow-y: auto; max-height: 320px; }
+
+  /* ── Alert rows ── */
+  .alert-row {
+    display: grid;
+    grid-template-columns: 90px 80px 1fr 110px 80px;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    transition: background 0.1s;
+  }
+  .alert-row:hover { background: var(--bg3); }
+  .alert-row.acked { opacity: 0.35; }
+
+  .sev-badge {
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: center;
+    border: 1px solid;
+  }
+
+  .sev-CRITICAL { color: #ff3b3b; border-color: #ff3b3b; background: #5c101022; }
+  .sev-HIGH     { color: #ff7043; border-color: #ff7043; background: #5c2a1022; }
+  .sev-MEDIUM   { color: #ffb300; border-color: #ffb300; background: #5c4a0022; }
+  .sev-LOW      { color: #66bb6a; border-color: #66bb6a; background: #1a3a1a22; }
+
+  .rule-name { color: var(--text); }
+  .alert-desc { color: var(--text-dim); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .alert-time { color: var(--text-dim); font-size: 10px; }
+
+  .ack-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 2px 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ack-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* ── Event rows ── */
+  .event-row {
+    display: grid;
+    grid-template-columns: 130px 80px 100px 1fr;
+    align-items: center;
+    padding: 6px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    transition: background 0.1s;
+  }
+  .event-row:hover { background: var(--bg3); }
+
+  .src-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+    border: 1px solid var(--green-dim);
+    color: var(--green-dim);
+    letter-spacing: 0.06em;
+  }
+  .src-tag.netwatch  { border-color: #4fc3f7; color: #4fc3f7; }
+  .src-tag.homeguard { border-color: #ce93d8; color: #ce93d8; }
+  .src-tag.apache    { border-color: #ffb300; color: #ffb300; }
+
+  .event-type { color: var(--text-dim); font-size: 10px; }
+  .event-ip   { color: var(--green); }
+  .event-msg  { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ── Sources bar ── */
+  .source-bars { padding: 12px 16px; }
+  .source-row  { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-family: var(--mono); font-size: 11px; }
+  .source-name { width: 90px; color: var(--text-dim); }
+  .bar-track   { flex: 1; height: 4px; background: var(--border); }
+  .bar-fill    { height: 100%; background: var(--green); transition: width 0.4s; }
+  .bar-fill.netwatch  { background: var(--blue); }
+  .bar-fill.homeguard { background: #ce93d8; }
+  .bar-fill.apache    { background: var(--amber); }
+  .source-count { width: 30px; text-align: right; color: var(--green); }
+
+  /* ── Severity donut placeholder ── */
+  .sev-list { padding: 12px 16px; }
+  .sev-row  { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; }
+  .sev-row:last-child { border: none; }
+
+  /* ── Empty state ── */
+  .empty {
+    padding: 32px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">SENTINELCORE</div>
+  <div class="header-right">
+    <span>AUTO-REFRESH 30s</span>
+    <span id="last-refresh">—</span>
+    <button class="refresh-btn" onclick="loadAll()">↻ REFRESH</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Events</div>
+      <div class="stat-value" id="stat-events">—</div>
+      <div class="stat-sub">ingested</div>
+    </div>
+    <div class="stat-card danger">
+      <div class="stat-label">Active Alerts</div>
+      <div class="stat-value" id="stat-unacked">—</div>
+      <div class="stat-sub">unacknowledged</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-label">Total Alerts</div>
+      <div class="stat-value" id="stat-alerts">—</div>
+      <div class="stat-sub">all time</div>
+    </div>
+    <div class="stat-card info">
+      <div class="stat-label">Sources</div>
+      <div class="stat-value" id="stat-sources">—</div>
+      <div class="stat-sub">active</div>
+    </div>
+  </div>
+
+  <!-- Alerts + Sources -->
+  <div class="two-col">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span>ACTIVE ALERTS</span>
+        <span id="alert-count">0</span>
+      </div>
+      <div class="panel-body" id="alerts-list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><span>EVENTS BY SOURCE</span></div>
+      <div class="source-bars" id="source-bars"></div>
+      <div class="panel-header" style="border-top:1px solid var(--border)"><span>ALERTS BY SEVERITY</span></div>
+      <div class="sev-list" id="sev-list"></div>
+    </div>
+
+  </div>
+
+  <!-- Events log -->
+  <div class="panel">
+    <div class="panel-header">
+      <span>EVENT LOG</span>
+      <span id="event-count">0</span>
+    </div>
+    <div class="panel-body" id="events-list"></div>
+  </div>
+
+</main>
+
+<script>
+const SEV_ORDER = ['CRITICAL','HIGH','MEDIUM','LOW'];
+
+async function loadStats() {
+  const r = await fetch('/api/stats');
+  const d = await r.json();
+
+  document.getElementById('stat-events').textContent  = d.total_events;
+  document.getElementById('stat-alerts').textContent  = d.total_alerts;
+  document.getElementById('stat-unacked').textContent = d.unacknowledged_alerts;
+  document.getElementById('stat-sources').textContent = Object.keys(d.events_by_source || {}).length;
+
+  // Source bars
+  const sources = d.events_by_source || {};
+  const maxVal  = Math.max(...Object.values(sources), 1);
+  const barsEl  = document.getElementById('source-bars');
+  barsEl.innerHTML = Object.entries(sources).map(([src, n]) => `
+    <div class="source-row">
+      <span class="source-name">${src}</span>
+      <div class="bar-track"><div class="bar-fill ${src}" style="width:${(n/maxVal*100).toFixed(0)}%"></div></div>
+      <span class="source-count">${n}</span>
+    </div>`).join('') || '<div class="empty">no data</div>';
+
+  // Severity list
+  const sevs  = d.alerts_by_severity || {};
+  const sevEl = document.getElementById('sev-list');
+  sevEl.innerHTML = SEV_ORDER.filter(s => sevs[s]).map(s => `
+    <div class="sev-row">
+      <span class="sev-badge sev-${s}">${s}</span>
+      <span style="font-family:var(--mono);font-size:13px">${sevs[s]}</span>
+    </div>`).join('') || '<div class="empty">no alerts</div>';
+}
+
+async function loadAlerts() {
+  const r = await fetch('/api/alerts?limit=100');
+  const alerts = await r.json();
+  const el = document.getElementById('alerts-list');
+  document.getElementById('alert-count').textContent = alerts.length;
+
+  if (!alerts.length) { el.innerHTML = '<div class="empty">no alerts — network is quiet</div>'; return; }
+
+  el.innerHTML = alerts.map(a => {
+    const ts   = a.created_at ? a.created_at.slice(11,19) : '—';
+    const acked = a.acknowledged ? 'acked' : '';
+    return `
+    <div class="alert-row ${acked}" id="alert-${a.id}">
+      <span class="sev-badge sev-${a.severity}">${a.severity}</span>
+      <span class="rule-name">${a.rule_name.replace(/_/g,' ')}</span>
+      <span class="alert-desc" title="${a.description}">${a.description}</span>
+      <span class="alert-time">${ts}</span>
+      ${!a.acknowledged
+        ? `<button class="ack-btn" onclick="ack(${a.id})">ACK</button>`
+        : `<span style="color:var(--text-dim);font-size:10px;font-family:var(--mono)">ACKED</span>`}
+    </div>`;
+  }).join('');
+}
+
+async function loadEvents() {
+  const r = await fetch('/api/events?limit=150');
+  const events = await r.json();
+  const el = document.getElementById('events-list');
+  document.getElementById('event-count').textContent = events.length;
+
+  if (!events.length) { el.innerHTML = '<div class="empty">no events ingested yet</div>'; return; }
+
+  el.innerHTML = events.map(e => {
+    const ts = e.timestamp ? e.timestamp.slice(11,19) : '—';
+    const ip = e.src_ip || '—';
+    return `
+    <div class="event-row">
+      <span style="color:var(--text-dim);font-size:10px">${ts}</span>
+      <span class="src-tag ${e.source}">${e.source}</span>
+      <span class="event-ip">${ip}</span>
+      <span class="event-msg" title="${e.message}">${e.message}</span>
+    </div>`;
+  }).join('');
+}
+
+async function ack(id) {
+  await fetch(`/api/alerts/${id}/acknowledge`, {method:'POST'});
+  loadAll();
+}
+
+async function loadAll() {
+  await Promise.all([loadStats(), loadAlerts(), loadEvents()]);
+  document.getElementById('last-refresh').textContent =
+    new Date().toLocaleTimeString('en-GB');
+}
+
+// Auto-refresh every 30s
+loadAll();
+setInterval(loadAll, 30000);
+</script>
+</body>
+</html>

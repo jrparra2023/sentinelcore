@@ -1,0 +1,100 @@
+# SentinelCore — correlation/rules.yaml
+# Each rule defines a detection pattern.
+# The engine evaluates all enabled rules after each ingestion run.
+#
+# Fields
+# -------
+# name        : unique rule identifier
+# description : human-readable explanation
+# enabled     : true/false
+# severity    : alert severity if rule fires
+# window_secs : look-back window in seconds
+# threshold   : minimum event count to trigger
+# conditions  : list of filters (all must match)
+#   - event_type : must equal this
+#   - source     : must equal this (optional)
+#   - group_by   : field to group by (src_ip | user)
+
+rules:
+
+  - name: ssh_brute_force
+    description: "5+ failed SSH logins from the same IP within 60 seconds"
+    enabled: true
+    severity: HIGH
+    window_secs: 60
+    threshold: 5
+    conditions:
+      - event_type: auth_failure
+        source: auth_log
+        group_by: src_ip
+
+  - name: ssh_brute_force_slow
+    description: "20+ failed SSH logins from the same IP within 10 minutes (slow brute force)"
+    enabled: true
+    severity: HIGH
+    window_secs: 600
+    threshold: 20
+    conditions:
+      - event_type: auth_failure
+        source: auth_log
+        group_by: src_ip
+
+  - name: web_scanner
+    description: "20+ 404 errors from the same IP within 2 minutes (directory scan)"
+    enabled: true
+    severity: HIGH
+    window_secs: 120
+    threshold: 20
+    conditions:
+      - event_type: web_scan
+        source: apache
+        group_by: src_ip
+
+  - name: repeated_sudo
+    description: "3+ sudo commands by the same user within 5 minutes"
+    enabled: true
+    severity: MEDIUM
+    window_secs: 300
+    threshold: 3
+    conditions:
+      - event_type: sudo_command
+        source: auth_log
+        group_by: user
+
+  - name: netwatch_port_scan
+    description: "Port scan detected by NetWatch (single alert = HIGH)"
+    enabled: true
+    severity: HIGH
+    window_secs: 300
+    threshold: 1
+    conditions:
+      - event_type: port_scan
+        source: netwatch
+        group_by: src_ip
+
+  - name: homeguard_unknown_device
+    description: "Unknown device detected by HomeGuard"
+    enabled: true
+    severity: HIGH
+    window_secs: 3600
+    threshold: 1
+    conditions:
+      - event_type: unknown_device
+        source: homeguard
+        group_by: src_ip
+
+  - name: unknown_device_then_portscan
+    description: >
+      Cross-source: unknown device (HomeGuard) AND port scan (NetWatch)
+      from same IP within 10 minutes — possible reconnaissance
+    enabled: true
+    severity: CRITICAL
+    window_secs: 600
+    threshold: 1
+    conditions:
+      - event_type: unknown_device
+        source: homeguard
+        group_by: src_ip
+      - event_type: port_scan
+        source: netwatch
+        group_by: src_ip

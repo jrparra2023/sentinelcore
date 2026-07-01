@@ -1,0 +1,16 @@
+[
+  {
+    "timestamp": "2026-06-30T22:56:00",
+    "type": "PORT_SCAN",
+    "severity": "HIGH",
+    "src_ip": "192.168.1.99",
+    "details": "Port scan detected: 15 ports in 30s from 192.168.1.99"
+  },
+  {
+    "timestamp": "2026-06-30T22:56:30",
+    "type": "DNS_ANOMALY",
+    "severity": "MEDIUM",
+    "src_ip": "192.168.1.5",
+    "details": "Unusual DNS query volume: 200 queries/min"
+  }
+]
