@@ -1,0 +1,73 @@
+# SentinelCore — config.yaml
+# Central configuration file.
+# All paths, thresholds, and settings live here.
+# Edit this file instead of touching source code.
+
+# ── General ───────────────────────────────────────────────────────────────────
+sentinelcore:
+  version: "1.3"
+  log_level: "INFO"           # DEBUG | INFO | WARNING | ERROR
+
+# ── Database ──────────────────────────────────────────────────────────────────
+database:
+  path: "logs/sentinelcore.db"
+
+# ── Log sources ───────────────────────────────────────────────────────────────
+# Paths used by the watcher and CLI. Override for your system.
+sources:
+  auth_log:  "/var/log/auth.log"
+  syslog:    "/var/log/syslog"
+  apache:    "/var/log/apache2/access.log"
+  nginx:     "/var/log/nginx/access.log"
+  suricata:  "/var/log/suricata/eve.json"
+  # JSON sources (your other tools):
+  netwatch:  "~/netwatch/logs/alerts.json"
+  homeguard: "~/homeguard/logs/alerts.json"
+
+# ── Watcher ───────────────────────────────────────────────────────────────────
+watcher:
+  poll_interval_secs: 5       # fallback polling interval
+  correlate_every_secs: 30    # how often to run correlation engine
+
+# ── Dashboard / API ───────────────────────────────────────────────────────────
+dashboard:
+  host: "127.0.0.1"
+  port: 5000
+  # REST API token — change this before deploying!
+  # Generate with: python3 -c "import secrets; print(secrets.token_hex(32))"
+  api_token: "CHANGE_ME_USE_SECRETS_TOKEN_HEX_32"
+  # Set to false to disable token auth (development only)
+  require_auth: true
+
+# ── Notifications ─────────────────────────────────────────────────────────────
+notifications:
+  # Which severity levels trigger notifications
+  min_severity: "HIGH"        # LOW | MEDIUM | HIGH | CRITICAL
+
+  # Desktop notifications (Linux notify-send / macOS osascript)
+  desktop:
+    enabled: true
+
+  # Email notifications (requires SMTP config below)
+  email:
+    enabled: false
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
+    smtp_user: "your@gmail.com"
+    smtp_password: "your_app_password"   # use Gmail App Password
+    from_addr: "your@gmail.com"
+    to_addr: "alerts@yourdomain.com"
+
+# ── Geo-lookup ────────────────────────────────────────────────────────────────
+geo:
+  enabled: true
+  cache_ttl_days: 7
+  timeout_secs: 3
+
+# ── Reputation ────────────────────────────────────────────────────────────────
+reputation:
+  enabled: true
+  # Score thresholds
+  suspicious_threshold: 30
+  malicious_threshold: 60
+  known_bad_threshold: 85

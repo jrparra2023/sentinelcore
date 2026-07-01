@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+
+  sentinelcore:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: sentinelcore
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist DB and logs outside the container
+      - sentinelcore_logs:/app/logs
+      # Mount host log files (read-only) for ingestion
+      - /var/log/auth.log:/mnt/auth.log:ro
+      - /var/log/syslog:/mnt/syslog:ro
+      # Uncomment if running Apache/Nginx on host:
+      # - /var/log/apache2/access.log:/mnt/apache.log:ro
+      # - /var/log/nginx/access.log:/mnt/nginx.log:ro
+      # Uncomment for Suricata:
+      # - /var/log/suricata/eve.json:/mnt/eve.json:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    # Override config paths to use mounted files:
+    command: >
+      sh -c "python3 ingest.py --auth /mnt/auth.log --syslog /mnt/syslog
+             && python3 dashboard/app.py"
+
+  # Watcher service — continuous ingestion
+  sentinelcore-watcher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: sentinelcore-watcher
+    restart: unless-stopped
+    volumes:
+      - sentinelcore_logs:/app/logs
+      - /var/log/auth.log:/mnt/auth.log:ro
+      - /var/log/syslog:/mnt/syslog:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: >
+      python3 ingestion/watcher.py
+        --auth /mnt/auth.log
+        --syslog /mnt/syslog
+        --interval 30
+
+volumes:
+  sentinelcore_logs:
