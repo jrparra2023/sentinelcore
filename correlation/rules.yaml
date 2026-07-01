@@ -153,3 +153,32 @@ rules:
       - event_type: port_scan
         source: netwatch
         group_by: src_ip
+
+# ── Rule chains ───────────────────────────────────────────────────────────────
+# Fired AFTER main rules. `trigger` must fire first, then `then` must also
+# have matched the same IP within `window_secs`.
+chains:
+
+  - trigger: ssh_brute_force
+    then: netwatch_port_scan
+    severity: CRITICAL
+    window_secs: 600
+    description: "SSH brute force + port scan from same IP — active intrusion attempt"
+
+  - trigger: ssh_brute_force
+    then: suricata_port_scan
+    severity: CRITICAL
+    window_secs: 600
+    description: "SSH brute force + Suricata port scan — confirmed attacker"
+
+  - trigger: nginx_web_scanner
+    then: suricata_web_attack
+    severity: CRITICAL
+    window_secs: 300
+    description: "Web directory scan + SQL injection attempt from same IP"
+
+  - trigger: homeguard_unknown_device
+    then: ssh_brute_force
+    severity: CRITICAL
+    window_secs: 900
+    description: "Unknown device immediately attempting SSH brute force"

@@ -100,10 +100,30 @@ class Database:
                     acknowledged INTEGER DEFAULT 0
                 );
 
+                CREATE TABLE IF NOT EXISTS reputation (
+                    ip          TEXT    PRIMARY KEY,
+                    score       INTEGER DEFAULT 0,
+                    alert_count INTEGER DEFAULT 0,
+                    last_seen   TEXT,
+                    first_seen  TEXT,
+                    tags        TEXT    DEFAULT '[]'
+                );
+
+                CREATE TABLE IF NOT EXISTS geo_cache (
+                    ip          TEXT    PRIMARY KEY,
+                    country     TEXT,
+                    country_code TEXT,
+                    city        TEXT,
+                    org         TEXT,
+                    is_private  INTEGER DEFAULT 0,
+                    cached_at   TEXT
+                );
+
                 CREATE INDEX IF NOT EXISTS idx_events_timestamp  ON events(timestamp);
                 CREATE INDEX IF NOT EXISTS idx_events_src_ip     ON events(src_ip);
                 CREATE INDEX IF NOT EXISTS idx_events_event_type ON events(event_type);
                 CREATE INDEX IF NOT EXISTS idx_alerts_created_at ON alerts(created_at);
+                CREATE INDEX IF NOT EXISTS idx_reputation_score  ON reputation(score DESC);
             """)
 
     # ── Events ────────────────────────────────────────────────────────────────
@@ -234,3 +254,68 @@ class Database:
             "alerts_by_severity": {r["severity"]: r["n"] for r in by_severity},
             "events_by_source":   {r["source"]:   r["n"] for r in by_source},
         }
+
+    # ── Reputation ────────────────────────────────────────────────────────────
+
+    def update_reputation(self, ip: str, score_delta: int, tag: str = None):
+        """Update IP reputation score. Creates record if missing."""
+        from datetime import datetime
+        now = datetime.now().isoformat(timespec="seconds")
+        with self._connect() as conn:
+            existing = conn.execute(
+                "SELECT score, alert_count, tags, first_seen FROM reputation WHERE ip = ?", (ip,)
+            ).fetchone()
+            if existing:
+                tags = json.loads(existing["tags"])
+                if tag and tag not in tags:
+                    tags.append(tag)
+                new_score = max(0, min(100, existing["score"] + score_delta))
+                conn.execute(
+                    """UPDATE reputation
+                       SET score=?, alert_count=alert_count+1, last_seen=?, tags=?
+                       WHERE ip=?""",
+                    (new_score, now, json.dumps(tags), ip)
+                )
+            else:
+                tags = [tag] if tag else []
+                conn.execute(
+                    """INSERT INTO reputation (ip, score, alert_count, last_seen, first_seen, tags)
+                       VALUES (?,?,1,?,?,?)""",
+                    (ip, max(0, min(100, score_delta)), now, now, json.dumps(tags))
+                )
+
+    def get_reputation(self, ip: str) -> dict | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM reputation WHERE ip = ?", (ip,)
+            ).fetchone()
+        return dict(row) if row else None
+
+    def get_top_offenders(self, limit: int = 10) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM reputation ORDER BY score DESC LIMIT ?", (limit,)
+            ).fetchall()
+        return [dict(r) for r in rows]
+
+    # ── Geo cache ─────────────────────────────────────────────────────────────
+
+    def get_geo(self, ip: str) -> dict | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM geo_cache WHERE ip = ?", (ip,)
+            ).fetchone()
+        return dict(row) if row else None
+
+    def set_geo(self, ip: str, data: dict):
+        from datetime import datetime
+        now = datetime.now().isoformat(timespec="seconds")
+        with self._connect() as conn:
+            conn.execute(
+                """INSERT OR REPLACE INTO geo_cache
+                   (ip, country, country_code, city, org, is_private, cached_at)
+                   VALUES (?,?,?,?,?,?,?)""",
+                (ip, data.get("country"), data.get("country_code"),
+                 data.get("city"), data.get("org"),
+                 1 if data.get("is_private") else 0, now)
+            )
