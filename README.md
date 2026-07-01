@@ -166,11 +166,11 @@ The `unknown_device_then_portscan` rule demonstrates cross-source correlation: i
 - [x] Flask live dashboard with ACK controls
 - [x] 24 unit tests (pytest)
 
-### v1.1 — Extended Ingestion 🔜
-- [ ] Syslog parser (`/var/log/syslog`)
-- [ ] Suricata EVE JSON importer
-- [ ] Nginx access log support
-- [ ] File watcher for continuous ingestion (watchdog)
+### v1.1 — Extended Ingestion ✅
+- [x] Syslog parser (`/var/log/syslog`)
+- [x] Suricata EVE JSON importer
+- [x] Nginx access log support
+- [x] File watcher for continuous ingestion (watchdog)
 
 ### v1.2 — Smarter Correlation 🔜
 - [ ] IP reputation scoring (repeat offender tracking)
@@ -189,6 +189,6 @@ The `unknown_device_then_portscan` rule demonstrates cross-source correlation: i
 ## Author
 
 **José Rafael Parra Dugarte**  
-Electronics & Telecommunications Engineering — Universidad del Cauca  
+Electronics & Telecommunications Engineering student — Universidad del Cauca  
 Researcher @ GRIAL Wireless Networks Research Group  
 [LinkedIn](https://www.linkedin.com/in/josé-rafael-parra-dugarte) · [GitHub](https://github.com/jrparra2023)
