@@ -172,11 +172,11 @@ The `unknown_device_then_portscan` rule demonstrates cross-source correlation: i
 - [x] Nginx access log support
 - [x] File watcher for continuous ingestion (watchdog)
 
-### v1.2 — Smarter Correlation 🔜
-- [ ] IP reputation scoring (repeat offender tracking)
-- [ ] Geo-lookup for external IPs
-- [ ] Alert deduplication improvements
-- [ ] Rule chaining (alert A triggers rule B)
+### v1.2 — Smarter Correlation ✅
+- [x] IP reputation scoring (repeat offender tracking)
+- [x] Geo-lookup for external IPs
+- [x] Alert deduplication improvements
+- [x] Rule chaining (alert A triggers rule B)
 
 ### v1.3 — Production Ready 🔜
 - [ ] Docker container
