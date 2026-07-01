@@ -158,31 +158,31 @@ The `unknown_device_then_portscan` rule demonstrates cross-source correlation: i
 ## Roadmap
 
 ### v1.0 — Core Pipeline ✅
-- Multi-source ingestion (auth.log, Apache, NetWatch, HomeGuard)
-- Unified event normalization schema
-- SQLite storage with indexed queries
-- YAML-driven correlation engine with 7 rules
-- Cross-source CRITICAL detection
-- Flask live dashboard with ACK controls
-- 24 unit tests (pytest)
+- [x] Multi-source ingestion (auth.log, Apache, NetWatch, HomeGuard)
+- [x] Unified event normalization schema
+- [x] SQLite storage with indexed queries
+- [x] YAML-driven correlation engine with 7 rules
+- [x] Cross-source CRITICAL detection
+- [x] Flask live dashboard with ACK controls
+- [x] 24 unit tests (pytest)
 
 ### v1.1 — Extended Ingestion 🔜
-- Syslog parser (`/var/log/syslog`)
-- Suricata EVE JSON importer
-- Nginx access log support
-- File watcher for continuous ingestion (watchdog)
+- [ ] Syslog parser (`/var/log/syslog`)
+- [ ] Suricata EVE JSON importer
+- [ ] Nginx access log support
+- [ ] File watcher for continuous ingestion (watchdog)
 
 ### v1.2 — Smarter Correlation 🔜
-- IP reputation scoring (repeat offender tracking)
-- Geo-lookup for external IPs
-- Alert deduplication improvements
-- Rule chaining (alert A triggers rule B)
+- [ ] IP reputation scoring (repeat offender tracking)
+- [ ] Geo-lookup for external IPs
+- [ ] Alert deduplication improvements
+- [ ] Rule chaining (alert A triggers rule B)
 
 ### v1.3 — Production Ready 🔜
-- Docker container
-- Config file (config.yaml) for paths and thresholds
-- Email / desktop notifications on CRITICAL alerts
-- REST API with token authentication
+- [ ] Docker container
+- [ ] Config file (config.yaml) for paths and thresholds
+- [ ] Email / desktop notifications on CRITICAL alerts
+- [ ] REST API with token authentication
 
 ---
 
@@ -191,4 +191,4 @@ The `unknown_device_then_portscan` rule demonstrates cross-source correlation: i
 **José Rafael Parra Dugarte**  
 Electronics & Telecommunications Engineering — Universidad del Cauca  
 Researcher @ GRIAL Wireless Networks Research Group  
-[github.com/jrparra2023](https://github.com/jrparra2023)
+[LinkedIn](https://www.linkedin.com/in/josé-rafael-parra-dugarte) · [GitHub](https://github.com/jrparra2023)
