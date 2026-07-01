@@ -178,11 +178,11 @@ The `unknown_device_then_portscan` rule demonstrates cross-source correlation: i
 - [x] Alert deduplication improvements
 - [x] Rule chaining (alert A triggers rule B)
 
-### v1.3 — Production Ready 🔜
-- [ ] Docker container
-- [ ] Config file (config.yaml) for paths and thresholds
-- [ ] Email / desktop notifications on CRITICAL alerts
-- [ ] REST API with token authentication
+### v1.3 — Production Ready ✅
+- [x] Docker container
+- [x] Config file (config.yaml) for paths and thresholds
+- [x] Email / desktop notifications on CRITICAL alerts
+- [x] REST API with token authentication
 
 ---
 
