@@ -1,0 +1,8 @@
+Jul  1 20:43:01 kali systemd[1]: Started Daily apt download activities.
+Jul  1 20:43:05 kali systemd[1]: Failed to start MySQL Community Server.
+Jul  1 20:43:10 kali systemd[1]: Stopped OpenSSH Daemon.
+Jul  1 20:43:15 kali kernel: [12345.678] Out of memory: Kill process 1234 (python3) score 500 or sacrifice child
+Jul  1 20:43:20 kali kernel: [12346.000] segfault at 00000000 ip 00007f1234abcd00 sp 00007fff12345678 error 4
+Jul  1 20:43:25 kali kernel: [12347.000] Buffer I/O error on device sda1, logical block 12345
+Jul  1 20:43:30 kali pam_unix(sshd:auth)[999]: authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.1 user=root
+Jul  1 20:43:35 kali systemd[1]: Started Network Manager.

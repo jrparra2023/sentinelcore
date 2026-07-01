@@ -11,7 +11,7 @@ from storage.db import NormalizedEvent
 # ── Valid values (guards against typos in parsers) ────────────────────────────
 VALID_SOURCES = {
     "auth_log", "syslog", "apache", "nginx",
-    "netwatch", "homeguard", "manual",
+    "netwatch", "homeguard", "suricata", "manual",
 }
 
 VALID_EVENT_TYPES = {

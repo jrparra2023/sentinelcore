@@ -83,6 +83,61 @@ rules:
         source: homeguard
         group_by: src_ip
 
+  - name: suricata_port_scan
+    description: "Port scan detected by Suricata IDS"
+    enabled: true
+    severity: HIGH
+    window_secs: 300
+    threshold: 1
+    conditions:
+      - event_type: port_scan
+        source: suricata
+        group_by: src_ip
+
+  - name: suricata_web_attack
+    description: "Web application attack detected by Suricata"
+    enabled: true
+    severity: HIGH
+    window_secs: 300
+    threshold: 1
+    conditions:
+      - event_type: web_scan
+        source: suricata
+        group_by: src_ip
+
+  - name: nginx_web_scanner
+    description: "20+ 404 errors from same IP on Nginx within 2 minutes"
+    enabled: true
+    severity: HIGH
+    window_secs: 120
+    threshold: 20
+    conditions:
+      - event_type: web_scan
+        source: nginx
+        group_by: src_ip
+
+  - name: syslog_service_failure
+    description: "Critical service failure detected in syslog"
+    enabled: true
+    severity: HIGH
+    window_secs: 300
+    threshold: 1
+    conditions:
+      - event_type: service_stop
+        source: syslog
+        group_by: src_ip
+
+  - name: syslog_system_critical
+    description: "Critical system error (OOM/disk) detected in syslog"
+    enabled: true
+    severity: CRITICAL
+    window_secs: 300
+    threshold: 1
+    conditions:
+      - event_type: system_error
+        source: syslog
+        group_by: src_ip
+
   - name: unknown_device_then_portscan
     description: >
       Cross-source: unknown device (HomeGuard) AND port scan (NetWatch)
