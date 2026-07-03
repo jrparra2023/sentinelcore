@@ -41,6 +41,8 @@ Third project in a cybersecurity portfolio: **NetWatch → HomeGuard → Sentine
 ---
 
 ## Project Structure
+
+```
 sentinelcore/
 ├── ingestion/
 │   ├── normalizer.py        # Validated event factory + timestamp normalization
@@ -70,7 +72,7 @@ sentinelcore/
 │   └── docker-compose.yml   # Dashboard + watcher services
 ├── sample_logs/             # Test log files (auth, syslog, nginx, suricata)
 ├── tests/
-│   ├── test_sentinelcore.py # 24 core tests (DB, normalizer, parsers, correlation)
+│   ├── test_sentinelcore.py # 24 core tests
 │   ├── test_v1_1.py         # 21 tests (syslog, suricata, nginx parsers)
 │   ├── test_v1_2.py         # 15 tests (reputation, geo, chaining)
 │   └── test_v1_3.py         # 14 tests (config, REST API auth, notifications)
@@ -79,6 +81,9 @@ sentinelcore/
 ├── requirements.txt         # Python dependencies
 ├── logs/                    # Auto-generated SQLite DB
 └── ingest.py                # CLI entry point
+```
+
+
 ---
 
 ## Detection Rules
